@@ -1,0 +1,149 @@
+# Win as mod
+set $mod Mod4
+
+# Font
+set $font Jura Bold
+font pango: $font 14
+
+# Borders
+default_border pixel 3
+default_floating_border pixel 2
+new_float pixel 3
+
+#smart_gaps on
+gaps inner 10
+gaps outer 10
+
+# Colors
+set $background #000000
+set $foreground #2090FF
+set $fontcolor #ffffff
+
+# Window colors
+client.focused          $foreground $foreground $background $foreground
+client.focused_inactive $foreground $background $foreground $background
+client.unfocused        $foreground $background $foreground $background
+client.urgent           $foreground $background $foreground $background
+
+# Bar
+bar	{	
+	colors	{
+	        background #000000
+		separator $foreground
+		focused_workspace  $foreground $background $fontcolor 
+		active_workspace   $foreground $foreground $fontcolor
+		inactive_workspace $background $background $fontcolor
+		urgent_workspace   $fontcolor $background $foreground
+	}		
+	status_command	i3blocks -c ~/.config/i3/i3blocks.conf
+	i3bar_command	i3bar  
+#         tray_output HDMI-0
+	font pango: $font 14
+#	output DP-2
+}
+#bar	{	
+#	colors	{
+#	        background $background
+#		separator $foreground
+#		focused_workspace  $foreground $background $foreground 
+#		active_workspace   $foreground $background $foreground
+#		inactive_workspace $background $background $foreground
+#		urgent_workspace   $foreground $foreground $background
+#	}		
+#	i3bar_command	i3bar  
+#	font pango: $font 14
+#	output eDP1
+#	}
+# Windows management
+bindsym $mod+c reload
+bindsym $mod+r restart
+floating_modifier Mod1
+bindsym $mod+z floating toggle
+bindsym $mod+Shift+q kill
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+bindsym $mod+h split h
+bindsym $mod+v split v
+bindsym $mod+f fullscreen
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+o mode "resize"
+mode "resize" {
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
+# Hotkeys
+bindsym $mod+t exec lxterminal							### TERMINAL 
+bindsym Print exec flameshot gui
+bindsym $mod+space exec systemctl poweroff					### POWEROFF 
+bindsym $mod+Escape exec systemctl reboot					### REBOOT
+bindsym $mod+F1 exec pactl set-sink-mute 0 toggle				### MUTE VOLUME
+bindsym $mod+F2 exec pactl -- set-sink-volume 0 -5%				### DECREASE VOLUME
+bindsym $mod+F3 exec pactl -- set-sink-volume 0 +5%				### INCREASE VOLUME
+
+
+# Autostart
+exec --no-startup-id picom --config .config/compton.conf &> /dev/null &
+exec --no-startup-id xautolock -time 30 -locker "~/.config/i3/i3lock/lock" &
+exec --no-startup-id nitrogen --restore &
+exec --no-startup-id dex -ae i3
+exec --no-startup-id bash ~/.screenlayout/dualscreen.sh
+
+# Workspaces
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+0 move container to workspace 10
+bindsym $mod+Shift+Home move workspace to output right
+bindsym $mod+Shift+End move workspace to output left
+
+bindsym $mod+grave workspace ; exec [ $(ps h -C nautilus | wc -l) = 0 ] && nautilus
+bindsym $mod+Shift+grave move container to workspace 
+
+bindsym $mod+Return workspace ; exec [ $(ps h -C lxterminal | grep lxterminal | wc -l) = 0 ] && lxterminal
+bindsym $mod+Shift+Return move container to workspace 
+
+assign [class="keepassxc"] → 
+bindsym $mod+k workspace ; exec [ $(ps h -C keepassxc | wc -l) = 0 ] && keepassxc
+
+assign [class="Thunderbird"] → 
+bindsym $mod+m workspace ; exec [ $(ps h -C thunderbird | wc -l) = 0 ] && thunderbird-bin
+
+assign [class="Firefox"] → 
+bindsym $mod+Caps_Lock workspace ; exec [ $(ps -ef | grep firefox-bin | grep -v grep | wc -l) = 0 ] && firefox-bin
+bindsym $mod+Shift+Caps_Lock move container to workspace 
+
+bindsym $mod+Home exec [ $(ps h -C picom | wc -l) = 0 ] && picom || pkill picom
+
+for_window [class="xpad"] floating enable
+bindsym Alt_R exec xpad -t
+
+
+for_window [class="steam_app_1182480" title="Origin"] floating enable

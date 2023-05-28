@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Copyright (C) 2019 Murad Aslanov <aslanov.murad.1995@gmail.com>
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+### Check device status
+device="${BLOCK_INSTANCE}"
+status=$(cat /sys/class/net/${device}/operstate)
+
+### If device is up, check ip address and if it is wi-fi, check ssid
+if [[ "${status}" == "up" ]]; then
+    ipaddr=$(ip addr show ${device} | grep "inet " | awk '{print $2}')
+### Also show gateway
+    gateway=$(ip route show | grep default | awk '{print $3}')
+
+### For wi-fi, show  ssid and ip address
+    if [[ "${device:0:2}" == "wl" ]]; then
+	    ssid=$(nmcli -t -f active,ssid dev wifi | grep yes | sed 's/yes://g' | sed '/^$/d')
+	    echo "${ssid} ${ipaddr}"
+    fi
+
+### For ethernet, just show ip address
+    echo "${ipaddr}"
+fi
+
+### If you click on it, it will show your external ip address
+case $BLOCK_BUTTON in
+  1) notify-send $(curl ifconfig.me/ip) ;;
+  3) notify-send "Checking network speed... " & echo "$(speedtest-cli | grep 'Download\|Upload' )" | while read speedtest; do notify-send "$speedtest"; done ;;
+esac
